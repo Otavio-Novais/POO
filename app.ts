@@ -10,27 +10,16 @@ export class App {
     rents: Rent[] = []
 
 
-    // Register bike (Test Phase)
-    // Remove User (Test Phase)
-    // Rent Bike (Test Phase)
-    // Return Bike 
-
     findUser(email: string): User | undefined
-     {
-        return this.users.find(user => user.email === email)
-     }
+   {return this.users.find(user => user.email === email)}
 
-     // Find User Index (Test Phase)
+
      findUserIndex(email: string): number
-     {
-        return this.users.findIndex(user => user.email === email)
-     }
+   {return this.users.findIndex(user => user.email === email)}
 
-     // Remove User (Test Phase)
+   
      removeUser(email: string): void
-     {
-        this.users.splice(this.findUserIndex(email),1)
-     }
+     {this.users.splice(this.findUserIndex(email),1)}
 
     registerUser(user: User)
      {
@@ -48,7 +37,6 @@ export class App {
      }
 
 
-     // Register Bike (Test Phase)
      registerBike(bike: Bike): string | undefined
      {
         for (const rBike of this.bikes)
@@ -63,7 +51,6 @@ export class App {
          return bike.id
      }
 
-        // Rent Bike
     RentBike(bike_to_rent: Bike, user_to_rent: User, date_take: Date, date_to_return: Date)
     {
         this.rents.push(Rent.create(this.rents, bike_to_rent, user_to_rent, date_take, date_to_return))
@@ -71,9 +58,6 @@ export class App {
     }
 
 
-    // Find Rent Index
-
-    // Return Bike (Test Phase)
     returnBike(id_bike: string | undefined, user: User)
     {
       
