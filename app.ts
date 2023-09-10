@@ -2,6 +2,7 @@ import { Bike } from "./bike";
 import { Rent } from "./rent";
 import { User } from "./user";
 import crypto from 'crypto';
+import bcrypt, { hash } from "bcrypt";
 
 export class App {
     users: User[] = []
@@ -31,7 +32,7 @@ export class App {
         this.users.splice(this.findUserIndex(email),1)
      }
 
-    registerUser(user: User): void
+    registerUser(user: User)
      {
         for (const rUser of this.users)
          {
@@ -40,9 +41,12 @@ export class App {
                 throw new Error('Duplicate user.')
              }
          }
+
          user.id = crypto.randomUUID()
          this.users.push(user)
+         return user.id
      }
+
 
      // Register Bike (Test Phase)
      registerBike(bike: Bike): string | undefined
@@ -79,5 +83,33 @@ export class App {
         rentTo = this.rents.filter(rents => rents.dateFrom <= new Date()) 
         rentTo[rentTo.findIndex(rent => rent.user == user)].dateReturned = new Date()
     }
+
+    printBikes():void
+    {
+      console.log("Listing Bikes:")
+      console.log(this.bikes)
+    }
+    
+    printRents(): void
+    {
+      console.log("Listing rents:")
+      console.log(this.rents)
+    }
+
+    printUsers(): void
+    {
+      console.log("Listing Users")
+      console.log(this.users)
+    }
+
+    authenticateUser(userId: string, userPassword:string){
+      const sUser = this.users.filter(user => user.id == userId)
+      if (bcrypt.compareSync(userPassword, sUser[0].password) == true){
+         console.log("Authenticated user!")
+         return
+      }
+      console.log('Unauthenticated user!')
+    }
+
 
 }
