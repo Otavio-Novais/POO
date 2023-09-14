@@ -31,14 +31,26 @@ console.log(Id)
 */
 
 /*
- Listing bikes and Rents
+ Listing bikes, rents and users
 app.printBikes()
 app.printRents()
 app.printUsers()
+
 */
 
+
+
+/*
 // Authenticated user
 app.authenticateUser(idUser1, '1234')
+*/
 
-// Unauthenticated user
+/*
+//  Unauthenticated user
 app.authenticateUser(idUser1, '12345')
+console.log(bike.testando)
+*/
+
+// Getting the location of the bike
+bike.Location()
+
