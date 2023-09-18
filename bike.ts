@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 
 export class Bike
  {
+    lastLocation: any = "Non-tracked"
     constructor(
         public name: string,
         public type: string,
@@ -12,9 +13,9 @@ export class Bike
         public ratings: number,
         public imageUrls: string[],
         public id?: string
-    ) {}    
+    ){}
 
-    //Test
+    //A Function that will retrive the location based on an IP adress 
     async Location(){
         const url = 'https://api.ipdata.co?api-key=b60bc829eeef22f1fb67ee109e614d2a277389dc04563634e8c96348&&fields=city,region,country_name,continent_name,latitude,longitude';
 
@@ -28,15 +29,15 @@ export class Bike
                 }
 
             // Parse the JSON from the response
-            const data = await response.json();
-
-                // Log the data
-            console.log(data);
+            const data = await response.json()
+            return data
+            
             
             } catch (error) {
                 // Log any errors
             console.log(error);
             }
+
         }
 
  }
