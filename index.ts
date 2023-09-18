@@ -43,14 +43,14 @@ app.printUsers()
 /*
 // Authenticated user
 app.authenticateUser(idUser1, '1234')
-*/
 
-/*
 //  Unauthenticated user
 app.authenticateUser(idUser1, '12345')
-console.log(bike.testando)
+
+OBS: OBSERVE THAT THIS FUNCTION ('authenticateUser') IS ASYNCHRONOUS. THERE MIGHT BE SOME ERRORS WHEN USING THEM TOGETHER
 */
 
 // Getting the location of the bike
-bike.Location()
+app.LocateBike(bike) // Localize and store the information in lastLocation
 
+// OBSERVE THAT THIS FUNCTION IS ASYNCHRONOUS. THERE MIGHT BE SOME ERRORS WHEN TRYING TO ACESS THE INFO 'lastLocation'
