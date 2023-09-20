@@ -1,18 +1,21 @@
 import { Bike } from "./bike";
 import { Rent } from "./rent";
 import { User } from "./user";
-import crypto from 'crypto';
-import bcrypt, { hash } from "bcrypt";
+import { Crypt } from "./crypt";
+import { Location } from "./location";
+import crypto from 'crypto'
 
 
 export class App {
     users: User[] = []
     bikes: Bike[] = []
     rents: Rent[] = []
+    crypt: Crypt = new Crypt()
 
 
-    findUser(email: string): User | undefined
-   {return this.users.find(user => user.email === email)}
+    findUser(email: string): User {
+      return this.users.find(user => user.email === email)
+  }
 
 
     findUserIndex(email: string): number
@@ -22,18 +25,20 @@ export class App {
     removeUser(email: string): void
     {this.users.splice(this.findUserIndex(email),1)}
 
-    registerUser(user: User)
-    {
-      for (const rUser of this.users)
-        {
-          if (rUser.email === user.email)
-          {throw new Error('Duplicate user.')}
-        }
-
-      user.id = crypto.randomUUID()
+    async registerUser(user: User): Promise<string> {
+      for (const rUser of this.users) {
+          if (rUser.email === user.email) {
+              throw new Error('Duplicate user.')
+          }
+      }
+      const newId = crypto.randomUUID()
+      user.id = newId
+      const encryptedPassword = await this.crypt.encrypt(user.password)
+      user.password = encryptedPassword
       this.users.push(user)
-      return user.id
-    }
+      return newId
+  }
+
 
 
     registerBike(bike: Bike): string | undefined
@@ -48,20 +53,34 @@ export class App {
       return bike.id
     }
 
-    RentBike(bike_to_rent: Bike, user_to_rent: User, date_take: Date, date_to_return: Date)
-    {
-      this.rents.push(Rent.create(this.rents, bike_to_rent, user_to_rent, date_take, date_to_return))
-      return bike_to_rent.id
-    }
+    rentBike(bikeId: string, userEmail: string): void {
+      const bike = this.bikes.find(bike => bike.id === bikeId)
+      if (!bike) {
+          throw new Error('Bike not found.')
+      }
+      if (!bike.available) {
+          throw new Error('Unavailable bike.')
+      }
+      const user = this.findUser(userEmail)
+      bike.available = false
+      const newRent = new Rent(bike, user, new Date())
+      this.rents.push(newRent)
+  }
 
 
-    returnBike(id_bike: string | undefined, user: User)
+    returnBike(id_bike: string, userEmail: string): number
     {
-      var rentTo: Rent[] = []
-        
-      rentTo = this.rents.filter(rents => rents.bike.id == id_bike)
-      rentTo = this.rents.filter(rents => rents.dateFrom <= new Date()) 
-      rentTo[rentTo.findIndex(rent => rent.user == user)].dateReturned = new Date()
+      const now = new Date()
+      const rent = this.rents.find(rent =>
+          rent.bike.id === id_bike &&
+          rent.user.email === userEmail &&
+          !rent.end
+      )
+      if (!rent) throw new Error('Rent not found.')
+      rent.end = now
+      rent.bike.available = true
+      const hours = diffHours(rent.end, rent.start)
+      return hours * rent.bike.rate
     }
 
     printBikes():void
@@ -98,20 +117,27 @@ export class App {
 
     }
 
-    async authenticateUser(userId: string, userPassword:string){
-      const specificUser = this.users.filter(user => user.id == userId)
-      if (await bcrypt.compare(userPassword, specificUser[0].password) == true){
-         console.log("Authenticated user!")
-         return
+    async authenticateUser(userEmail: string, userPassword:string): Promise<boolean>{
+      const specificUser = this.users.find(user => user.email == userEmail)
+      if(!specificUser){
+        throw new Error ("User not finded")
       }
-      console.log('Unauthenticated user!')
-      return
+      return await this.crypt.compare(userPassword, specificUser.password)
     }
 
-    async LocateBike(bike: Bike){
-      bike.lastLocation = await bike.Location()
-      console.log(bike.lastLocation)
-    }
+    moveBikeTo(bikeId: string, location: Location) {
+      const bike = this.bikes.find(bike => bike.id === bikeId)
+      if(!bike) return Error 
+      bike.location.latitude = location.latitude
+      bike.location.longitude = location.longitude
+  }
 
 
+
+}
+
+function diffHours(dt2: Date, dt1: Date) {
+  var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+  diff /= (60 * 60);
+  return Math.abs(diff);
 }
