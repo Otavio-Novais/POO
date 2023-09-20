@@ -2,55 +2,55 @@ import { App } from "./app";
 import { Bike } from "./bike";
 import { Rent } from "./rent";
 import { User } from "./user";
+import Sinon from "sinon";
 
-const bike = new Bike('mountain bike', 'mountain', 
-    123, 500, 100.5, 'desc', 5, [])
+async function main(){
+        const clock = Sinon.useFakeTimers();
+        const app = new App()
+        const user1 = new User('Jose', 'jose@mail.com', '1234')
+        await app.registerUser(user1)
+        const bike = new Bike('caloi mountainbike', 'mountain bike',
+            1234, 1234, 100.0, 'My bike', 5, [])
+        app.registerBike(bike)
+        console.log('Bike disponível: ', bike.available)
+        app.rentBike(bike.id, user1.email)
+        console.log('Bike disponível: ', bike.available)
+        clock.tick(1000 * 60 * 65)
+        console.log(app.returnBike(bike.id, user1.email))
+        console.log('Bike disponível: ', bike.available)
 
-const user = new User('Maria', 'maria@mail.com', '1234')
-
-
-const today = new Date()
-const twoDaysFromToday = new Date()
-twoDaysFromToday.setDate(twoDaysFromToday.getDate() + 2)
-const tomorrow = new Date()
-tomorrow.setDate(tomorrow.getDate() + 1)
-const sevenDaysFromToday = new Date()
-sevenDaysFromToday.setDate(sevenDaysFromToday.getDate() + 7)
-
-const rent1 = Rent.create([], bike, user, today, twoDaysFromToday)
-const user2 = new User('Maria Clara', 'maria@mail.com', '3123')
-
-
-const app = new App()
-const idUser1 = app.registerUser(user) // Receiving User Id
-const idBike1 = app.registerBike(bike) // Receiving Bike Id
-
-const Id = app.RentBike(bike,user, today, sevenDaysFromToday)
 /*
+/*  Testing encrypiting Function 
 console.log(Id)
 */
 
-/*
- Listing bikes, rents and users
+/*  Testing Listing
+//Listing bikes, rents and users
 app.printBikes()
 app.printRents()
 app.printUsers()
 
-*/
 
 
-
-/*
+//    Testing authenticated Function
 // Authenticated user
-app.authenticateUser(idUser1, '1234')
+app.authenticateUser(user1.email, '1234')
 
 //  Unauthenticated user
-app.authenticateUser(idUser1, '12345')
+app.authenticateUser(user1.email, '12345')
 
-OBS: OBSERVE THAT THIS FUNCTION ('authenticateUser') IS ASYNCHRONOUS. THERE MIGHT BE SOME ERRORS WHEN USING THEM TOGETHER
+// OBS: OBSERVE THAT THIS FUNCTION ('authenticateUser') IS ASYNCHRONOUS. THERE MIGHT BE SOME ERRORS WHEN USING THEM TOGETHER
 */
 
+/*   Testing Locate Function 
 // Getting the location of the bike
 app.LocateBike(bike) // Localize and store the information in lastLocation
 
 // OBSERVE THAT THIS FUNCTION IS ASYNCHRONOUS. THERE MIGHT BE SOME ERRORS WHEN TRYING TO ACESS THE INFO 'lastLocation'
+
+*/
+
+}
+
+main()
+
